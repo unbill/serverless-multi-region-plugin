@@ -157,9 +157,10 @@ class Plugin {
     const regionSettings = this.serverless.service.custom.dns[this.options.region]
     if (regionSettings && regionSettings.failover) {
       properties.Failover = regionSettings.failover
+    } else {
+      properties.Region = this.options.region
     }
 
-    properties.Region = this.options.region
     properties.SetIdentifier = this.options.region
 
     const elements = resources.Outputs.RegionalEndpoint.Value['Fn::Join'][1]
