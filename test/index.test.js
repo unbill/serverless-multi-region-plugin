@@ -128,3 +128,4 @@ describe('Plugin', () => {
 
     expect(resources.Resources.ApiGatewayStubDeployment.DependsOn).toBe('SomeMethodToDependOn')
   })
+})
