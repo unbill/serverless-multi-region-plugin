@@ -44,7 +44,7 @@ In your serverless.yml:
 ```
 # Set up your plugin
 plugins:
-  - serverless-multi-regional-plugin
+  - serverless-multi-region-plugin
 
 # Add this to the standard SLS "custom" region
 custom:
@@ -72,7 +72,7 @@ and they will override the convention-based settings.
 ```
 # Set up your plugin
 plugins:
-  - serverless-multi-regional-plugin
+  - serverless-multi-region-plugin
 
 # Add this to the standard SLS "custom" region
 custom:
