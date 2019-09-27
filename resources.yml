@@ -42,30 +42,6 @@ Resources:
         RequestInterval: 30
         FailureThreshold: 3
         Regions: [us-east-1, us-west-1, us-west-2]
-  ApiRegionalEndpointRecord:
-    Type: AWS::Route53::RecordSet
-    Properties:
-      HostedZoneId: ${self:custom.dns.hostedZoneId}
-      HostedZoneName: ${self:custom.dns.hostedZoneName}
-      Name:
-        Fn::Join:
-          - ''
-          - - Ref: ApiRegionalDomainName
-            - .
-      Region: ${opt:region}
-      SetIdentifier: ${opt:region}
-      HealthCheckId:
-        Ref: ApiRegionalHealthCheck
-      Type: A
-      AliasTarget:
-        HostedZoneId:
-          Fn::GetAtt:
-            - ApiRegionalDomainName
-            - RegionalHostedZoneId
-        DNSName:
-          Fn::GetAtt:
-            - ApiRegionalDomainName
-            - RegionalDomainName
   ApiDistribution:
     Type: AWS::CloudFront::Distribution
     Properties:

@@ -89,9 +89,6 @@ class Plugin {
     }
 
     this.prepareApiRegionalBasePathMapping(resources)
-    this.prepareApiRegionalEndpointRecord(resources)
-    this.prepareApiRegionalHealthCheck(resources)
-
     return this.prepareApiRegionalDomainSettings(resources).then(() => {
       if (createCdn) {
         return this.prepareCdnCertificate(distributionConfig)
@@ -141,54 +138,6 @@ class Plugin {
 
     const properties = resources.Resources.ApiRegionalBasePathMapping.Properties
     properties.Stage = this.options.stage
-  }
-
-  prepareApiRegionalEndpointRecord(resources) {
-    const properties = resources.Resources.ApiRegionalEndpointRecord.Properties
-
-    const hostedZoneId = this.serverless.service.custom.dns.hostedZoneId
-    if (hostedZoneId) {
-      delete properties.HostedZoneName
-      properties.HostedZoneId = hostedZoneId
-    } else {
-      delete properties.HostedZoneId
-      properties.HostedZoneName = `${this.hostName}.`
-    }
-
-    const regionSettings = this.serverless.service.custom.dns[this.options.region]
-    if (regionSettings && regionSettings.failover) {
-      delete properties.Region
-      properties.Failover = regionSettings.failover
-    } else {
-      delete properties.Failover
-      properties.Region = this.options.region
-    }
-
-    properties.SetIdentifier = this.options.region
-
-    const elements = resources.Outputs.RegionalEndpoint.Value['Fn::Join'][1]
-    if (elements[2]) {
-      elements[2] = `/${this.options.stage}`
-    }
-  }
-
-  prepareApiRegionalHealthCheck(resources) {
-    const dnsSettings = this.serverless.service.custom.dns
-    const regionSettings = dnsSettings[this.options.region]
-
-    const properties = resources.Resources.ApiRegionalEndpointRecord.Properties
-
-    if (regionSettings && regionSettings.healthCheckId) {
-      properties.HealthCheckId = regionSettings.healthCheckId
-      delete resources.Resources.ApiRegionalHealthCheck
-    } else {
-      const healthCheckProperties = resources.Resources.ApiRegionalHealthCheck.Properties
-      if (dnsSettings.healthCheckResourcePath) {
-        healthCheckProperties.HealthCheckConfig.ResourcePath = dnsSettings.healthCheckResourcePath
-      } else {
-        healthCheckProperties.HealthCheckConfig.ResourcePath = `/${this.options.stage}/healthcheck`
-      }
-    }
   }
 
   prepareCdnComment(distributionConfig) {
