@@ -89,6 +89,8 @@ class Plugin {
     }
 
     this.prepareApiRegionalBasePathMapping(resources)
+    this.prepareApiRegionalHealthCheck(resources)
+
     return this.prepareApiRegionalDomainSettings(resources).then(() => {
       if (createCdn) {
         return this.prepareCdnCertificate(distributionConfig)
@@ -138,6 +140,22 @@ class Plugin {
 
     const properties = resources.Resources.ApiRegionalBasePathMapping.Properties
     properties.Stage = this.options.stage
+  }
+
+  prepareApiRegionalHealthCheck(resources) {
+    const dnsSettings = this.serverless.service.custom.dns
+    const regionSettings = dnsSettings[this.options.region]
+
+    if (regionSettings && regionSettings.healthCheckId) {
+      delete resources.Resources.ApiRegionalHealthCheck
+    } else {
+      const healthCheckProperties = resources.Resources.ApiRegionalHealthCheck.Properties
+      if (dnsSettings.healthCheckResourcePath) {
+        healthCheckProperties.HealthCheckConfig.ResourcePath = dnsSettings.healthCheckResourcePath
+      } else {
+        healthCheckProperties.HealthCheckConfig.ResourcePath = `/${this.options.stage}/healthcheck`
+      }
+    }
   }
 
   prepareCdnComment(distributionConfig) {
